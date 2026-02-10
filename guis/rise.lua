@@ -280,10 +280,28 @@ local function createHighlight(size, pos)
 	end
 end
 
+local function downloadFile(path, func)
+    if not isfile(path) then
+        local suc, res = pcall(function()
+            return game:HttpGet(
+                'https://raw.githubusercontent.com/GamerFoxy0/SentinelRise/' ..
+                readfile('sentinelrise/profiles/commit.txt') .. '/' ..
+                select(1, path:gsub('sentinelrise/', '')),
+                true
+            )
+        end)
+        if not suc or not res or res == '404: Not Found' then
+            warn("Download failed: ", path)
+            return nil
+        end
+        writefile(path, res)
+    end
 
+    return (func or readfile)(path)
+end
 
 getcustomasset = not inputService.TouchEnabled and assetfunction and function(path)
-	return getcustomassets[path] or ''
+	return downloadFile(path, assetfunction)
 end or function(path)
 	return getcustomassets[path] or ''
 end
