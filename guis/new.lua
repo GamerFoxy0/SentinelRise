@@ -6306,7 +6306,7 @@ scaleslider = guipane:CreateSlider({
 })
 guipane:CreateDropdown({
 	Name = 'GUI Theme',
-	List = inputService.TouchEnabled and {'new','old'} or {'new','old'},
+	List = inputService.TouchEnabled and {'new','rise'} or {'new','rise'},
 	Function = function(val, mouse)
 		if mouse then
 			writefile('sentinelrise/profiles/gui.txt', val)
