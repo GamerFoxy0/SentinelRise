@@ -1,9 +1,9 @@
 local mainapi = {
 	Categories = {},
 	GUIColor = {
-		Hue = 0.46,
-		Sat = 0.96,
-		Value = 0.52
+		Hue = 215,
+		Sat = 65.8,
+		Value = 75.7
 	},
 	HeldKeybinds = {},
 	Keybind = {'RightShift'},
@@ -5691,8 +5691,11 @@ function mainapi:Load(skipgui, profile)
 		self.ProfileLabel.Size = UDim2.fromOffset(getfontsize(self.ProfileLabel.Text, self.ProfileLabel.TextSize, self.ProfileLabel.Font).X + 16, 24)
 	end
 
-	if isfile('sentinelrise/profiles/'..self.Profile..self.Place..'.txt') then
-		local savedata = loadJson('sentinelrise/profiles/'..self.Profile..self.Place..'.txt')
+	local globalPath  = 'sentinelrise/profiles/'..self.Profile..'.global.txt'
+    local perIdPath   = 'sentinelrise/profiles/'..self.Profile..self.Place..'.txt'
+    local useGlobal   = mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled and isfile(globalPath)
+	if isfile(useGlobal and globalPath or perIdPath) then
+        local savedata = loadJson(useGlobal and globalPath or perIdPath)
 		if not savedata then
 			savedata = {Categories = {}, Modules = {}, Legit = {}}
 			self:CreateNotification('Vape', 'Failed to load '..self.Profile..' profile.', 10, 'alert')
@@ -5872,7 +5875,7 @@ function mainapi:Save(newprofile)
 	end
 
 	writefile('sentinelrise/profiles/'..game.GameId..'.gui.txt', httpService:JSONEncode(guidata))
-	writefile('sentinelrise/profiles/'..self.Profile..self.Place..'.txt', httpService:JSONEncode(savedata))
+    writefile(mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled and ('sentinelrise/profiles/'..self.Profile..'.global.txt')or  ('sentinelrise/profiles/'..self.Profile..self.Place..'.txt'), httpService:JSONEncode(savedata))
 end
 
 function mainapi:SaveOptions(object, savedoptions)
@@ -6175,13 +6178,20 @@ mainapi.MultiKeybind = general:CreateToggle({
 	Name = 'Enable Multi-Keybinding',
 	Tooltip = 'Allows multiple keys to be bound to a module (eg. G + H)'
 })
+mainapi.GlobalConfig = general:CreateToggle({
+    Name = 'Use Config for all IDs',
+    Tooltip = 'When enabled, uses a shared config across all game place IDs.',
+    Default = false,
+})
 general:CreateButton({
 	Name = 'Reset current profile',
 	Function = function()
 	mainapi.Save = function() end
-		if isfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') and delfile then
-			delfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt')
-		end
+        if mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled then
+            if isfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') end
+        else
+            if isfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') end
+        end
 		shared.vapereload = true
 		if shared.VapeDeveloper then
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/GamerFoxy0/SentinelRise/refs/heads/main/NewMainScript.lua"))()
@@ -7148,8 +7158,12 @@ targetinfo = {
 }
 mainapi.Libraries.targetinfo = targetinfo
 
+local de = false
 function mainapi:UpdateTextGUI(afterload)
-	gradientRunToken = gradientRunToken + 1
+    if de and not afterload then return end
+    de = true
+    task.delay(0.05, function() de = false end)
+    gradientRunToken = gradientRunToken + 1
     if gradientHeartbeat then
         gradientHeartbeat:Disconnect()
         gradientHeartbeat = nil
@@ -7229,7 +7243,12 @@ function mainapi:UpdateTextGUI(afterload)
 				holdertext.Position = UDim2.fromOffset(right and 3 or 6, 2)
 				holdertext.BackgroundTransparency = 1
 				holdertext.BorderSizePixel = 0
-				holdertext.Text = i..(v.ExtraText and " <font color='#A8A8A8'>"..v.ExtraText()..'</font>' or '')
+				local extra = ""
+                if v.ExtraText then
+                    local text = type(v.ExtraText) == "function" and v.ExtraText() or v.ExtraText
+                    extra = " <font color='#A8A8A8'>"..tostring(text).."</font>"
+                end
+                holdertext.Text = i..extra
 				holdertext.TextSize = 15
 				holdertext.FontFace = textguifont.Value
 				holdertext.RichText = true
