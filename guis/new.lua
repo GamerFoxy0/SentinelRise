@@ -6189,7 +6189,7 @@ general:CreateButton({
 	Function = function()
 	mainapi.Save = function() end
         if mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled then
-            if isfile('sentinelrise/profiles/'..mainapi.Profile..'.global'..game.GameId..'.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') end
+            if isfile('sentinelrise/profiles/'..mainapi.Profile..'.global'..tostring(game.GameId)..'.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') end
         else
             if isfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') end
         end
