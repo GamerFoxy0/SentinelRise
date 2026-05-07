@@ -1,9 +1,9 @@
 local mainapi = {
 	Categories = {},
 	GUIColor = {
-		Hue = 215,
-		Sat = 65.8,
-		Value = 75.7
+		Hue = 0.46,
+		Sat = 0.96,
+		Value = 0.52
 	},
 	HeldKeybinds = {},
 	Keybind = {'RightShift'},
@@ -11,6 +11,7 @@ local mainapi = {
 	Libraries = {},
 	Modules = {},
 	Place = game.PlaceId,
+	Game  = game.GameId,
 	Profile = 'default',
 	Profiles = {},
 	RainbowSpeed = {Value = 1},
@@ -5691,7 +5692,7 @@ function mainapi:Load(skipgui, profile)
 		self.ProfileLabel.Size = UDim2.fromOffset(getfontsize(self.ProfileLabel.Text, self.ProfileLabel.TextSize, self.ProfileLabel.Font).X + 16, 24)
 	end
 
-	local globalPath  = 'sentinelrise/profiles/'..self.Profile..'.global.txt'
+	local globalPath  = 'sentinelrise/profiles/'..self.Profile..'.global'..tostring(self.Game)..'.txt'
     local perIdPath   = 'sentinelrise/profiles/'..self.Profile..self.Place..'.txt'
     local useGlobal   = mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled and isfile(globalPath)
 	if isfile(useGlobal and globalPath or perIdPath) then
@@ -5875,7 +5876,7 @@ function mainapi:Save(newprofile)
 	end
 
 	writefile('sentinelrise/profiles/'..game.GameId..'.gui.txt', httpService:JSONEncode(guidata))
-    writefile(mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled and ('sentinelrise/profiles/'..self.Profile..'.global.txt')or  ('sentinelrise/profiles/'..self.Profile..self.Place..'.txt'), httpService:JSONEncode(savedata))
+    writefile(mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled and ('sentinelrise/profiles/'..self.Profile..'.global'..tostring(self.Game)..'.txt')or  ('sentinelrise/profiles/'..self.Profile..self.Place..'.txt'), httpService:JSONEncode(savedata))
 end
 
 function mainapi:SaveOptions(object, savedoptions)
@@ -6188,7 +6189,7 @@ general:CreateButton({
 	Function = function()
 	mainapi.Save = function() end
         if mainapi.GlobalConfig and mainapi.GlobalConfig.Enabled then
-            if isfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') end
+            if isfile('sentinelrise/profiles/'..mainapi.Profile..'.global'..game.GameId..'.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..'.global.txt') end
         else
             if isfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') and delfile then delfile('sentinelrise/profiles/'..mainapi.Profile..mainapi.Place..'.txt') end
         end
