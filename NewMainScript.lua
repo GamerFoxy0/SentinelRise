@@ -1,9 +1,5 @@
-if not isfolder("sentinelrise") then
-    makefolder("sentinelrise")
-end
-if isfolder("sentinelrise") and not isfile("sentinelrise/main.lua") then
-    writefile("sentinelrise/main.lua", game:HttpGet("https://raw.githubusercontent.com/GamerFoxy0/SentinelRise/refs/heads/main/main.lua", true))
-    loadstring(readfile("sentinelrise/main.lua"))()
-elseif isfolder("sentinelrise") and isfile("sentinelrise/main.lua") then
-    loadstring(readfile("sentinelrise/main.lua"))()
-end
+local d = "sentinelrise"
+local u = "SentinelRise"
+local t, l = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/GamerFoxy0/"..u.."/refs/heads/main/version.txt"):gsub("%s+", "") end), isfile(d.."/version.cfg") and readfile(d.."/version.cfg"):gsub("%s+", "") or ""
+if not t or l ~= game:HttpGet("https://raw.githubusercontent.com/GamerFoxy0/"..u.."/refs/heads/main/version.txt"):gsub("%s+", "") or not isfile(d.."/main.lua") then if isfolder(d) then pcall(delfolder, d.."/games") pcall(delfolder, d.."/guis") pcall(delfile, d.."/main.lua") end if not isfolder(d) then makefolder(d) end writefile(d.."/main.lua", game:HttpGet("https://raw.githubusercontent.com/GamerFoxy0/"..u.."/refs/heads/main/main.lua", true)) writefile(d.."/version.cfg", game:HttpGet("https://raw.githubusercontent.com/GamerFoxy0/"..u.."/refs/heads/main/version.txt"):gsub("%s+", "")) end
+loadstring(readfile(d.."/main.lua"))()
